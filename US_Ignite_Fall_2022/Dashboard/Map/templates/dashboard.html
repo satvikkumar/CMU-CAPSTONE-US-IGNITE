@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        li {
+            float: left;
+        }
+
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        /* Change the link color to #111 (black) on hover */
+        li a:hover {
+            background-color: #111;
+        }
+
+        .active {
+            background-color: #04AA6D;
+        }
+    </style>
+</head>
+<body>
+
+<ul>
+    <li><a style="background-color: transparent;">Dashboard</a></li>
+    <li><a href="{% url '24' %}">24 hours</a></li>
+    <li><a href="{% url '48' %}">48 hours</a></li>
+    <li><a href="{% url '72' %}">72 hours</a></li>
+    <li><a href="{% url 'update' %}">Update Prediction</a></li>
+    <li><a href="{% url 'download' %}">Download</a></li>
+
+
+</ul>
+
+<div id="map"></div>
+<script>
+    // Set up the map and enable the Maps JavaScript API
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: {lat: 38.742132, lng: -104.792088}
+        });
+
+        var academy = [new google.maps.LatLng(38.83184534711655, -104.75743601862791),
+            new google.maps.LatLng(38.78149630621102, -104.75754334581187),
+            new google.maps.LatLng(38.77938371265257, -104.75711403728877),
+            new google.maps.LatLng(38.77758482132381, -104.75754334582689),
+            new google.maps.LatLng(38.77166489331312, -104.75743601869452),
+            new google.maps.LatLng(38.76971936806741, -104.7584824582561),
+            new google.maps.LatLng(38.76490762607918, -104.76666615269633),
+            new google.maps.LatLng(38.765786316239435, -104.78735346024267),
+            new google.maps.LatLng(38.76595368456209, -104.81372910460912)]
+        var sh115 = [
+            new google.maps.LatLng(38.806669935200084, -104.82222922345746),
+            new google.maps.LatLng(38.78611392487065, -104.82178325405108),
+            new google.maps.LatLng(38.77257141734846, -104.81311472310745),
+            new google.maps.LatLng(38.76136446721486, -104.81196635546382),
+            new google.maps.LatLng(38.74956523838519, -104.81113321634851),
+            new google.maps.LatLng(38.73800568413157, -104.80763887044988),
+            new google.maps.LatLng(38.735467970530586, -104.80848233325301),
+            new google.maps.LatLng(38.73425730854988, -104.80966806296514),
+            new google.maps.LatLng(38.73341817588372, -104.81121442046694),
+            new google.maps.LatLng(38.73153009134263, -104.81534924596087),
+            new google.maps.LatLng(38.72990420077685, -104.81703006933239),
+            new google.maps.LatLng(38.72594421557975, -104.81884535867812),
+            new google.maps.LatLng(38.712725192914505, -104.81891259167375),
+            new google.maps.LatLng(38.71107264307528, -104.81941683877486),
+            new google.maps.LatLng(38.68192378299224, -104.84573853314859),
+            new google.maps.LatLng(38.67431321458901, -104.85115078461631)]
+        var lasvegas = [
+            new google.maps.LatLng(38.77760765589288, -104.77235951161603),
+            new google.maps.LatLng(38.791491846851585, -104.77839586861738),
+            new google.maps.LatLng(38.80312298407406, -104.79043483562107),
+            new google.maps.LatLng(38.808520311966646, -104.79786524598016),
+            new google.maps.LatLng(38.80931531602098, -104.79939559072974),
+            new google.maps.LatLng(38.81357344178414, -104.80548847157309),
+            new google.maps.LatLng(38.81822537862481, -104.81716458474052)
+        ]
+        var i25 = [
+            new google.maps.LatLng(38.87686492433495, -104.83496365276088),
+            new google.maps.LatLng(38.86381721774457, -104.83356710338701),
+            new google.maps.LatLng(38.85631942595373, -104.83378761118288),
+            new google.maps.LatLng(38.845781695110134, -104.83065706077541),
+            new google.maps.LatLng(38.83846861473463, -104.83008220807625),
+            new google.maps.LatLng(38.834336610791254, -104.8311415175616),
+            new google.maps.LatLng(38.828496283933724, -104.83562517607771),
+            new google.maps.LatLng(38.821624697297466, -104.83599268907082),
+            new google.maps.LatLng(38.81805517490435, -104.83281275839721),
+            new google.maps.LatLng(38.8153251606405, -104.82717237723587),
+            new google.maps.LatLng(38.81383609782712, -104.81607348484357),
+            new google.maps.LatLng(38.803526347428814, -104.80129946098597),
+            new google.maps.LatLng(38.802151601342246, -104.80093194799285),
+            new google.maps.LatLng(38.78135533203934, -104.78689295023365)
+        ]
+        var venetucci = [
+            new google.maps.LatLng(38.79540458562688, -104.80361320841929),
+            new google.maps.LatLng(38.79227808663926, -104.80305925451385),
+            new google.maps.LatLng(38.78855660789837, -104.79876370746749),
+            new google.maps.LatLng(38.78324768983027, -104.78969750404016),
+            new google.maps.LatLng(38.782599958723075, -104.78815025358159),
+            new google.maps.LatLng(38.7812449159477, -104.78691818353049),
+            new google.maps.LatLng(38.777417897920806, -104.78420571956964)
+        ]
+        var lake = [
+            new google.maps.LatLng(38.79149522847783, -104.84870638692162),
+            new google.maps.LatLng(38.79755469873931, -104.8213359013272)
+        ]
+        var nevada = [
+            new google.maps.LatLng(38.81685140595625, -104.82235326494256),
+            new google.maps.LatLng(38.787199169835155, -104.8220036806655),
+            new google.maps.LatLng(38.785373517316536, -104.82167380494121),
+            new google.maps.LatLng(38.77349089746003, -104.81366482538355),
+            new google.maps.LatLng(38.771789678705616, -104.8129374704502),
+            new google.maps.LatLng(38.76132667366113, -104.8121914714521)
+        ]
+        var bandley = [
+            new google.maps.LatLng(38.725106873833276, -104.73112906300042),
+            new google.maps.LatLng(38.722751449404456, -104.72957080758457),
+            new google.maps.LatLng(38.716520597551, -104.72677081743657),
+            new google.maps.LatLng(38.70762929517855, -104.72309430859502),
+            new google.maps.LatLng(38.69425226171859, -104.72005084087117),
+            new google.maps.LatLng(38.67880095512319, -104.71291695247305)
+        ]
+        var santa = [
+            new google.maps.LatLng(38.72262606141174, -104.71836958259404),
+            new google.maps.LatLng(38.710781654321764, -104.71208593048267),
+            new google.maps.LatLng(38.707140108064586, -104.71116032205595),
+            new google.maps.LatLng(38.69595404664845, -104.7052666111588),
+            new google.maps.LatLng(38.68303638503388, -104.70451221618897)
+        ]
+        var fountain = [
+            new google.maps.LatLng(38.73708415733919, -104.69523767539323),
+            new google.maps.LatLng(38.733855957744616, -104.6954861671346),
+            new google.maps.LatLng(38.718145983458655, -104.70151586767618),
+            new google.maps.LatLng(38.7134651436339, -104.7010769096702),
+            new google.maps.LatLng(38.71001710955436, -104.69703849608038),
+            new google.maps.LatLng(38.69332261947434, -104.69677512118943),
+            new google.maps.LatLng(38.69220342394343, -104.69507781670617),
+            new google.maps.LatLng(38.68873152254957, -104.69323419311081),
+            new google.maps.LatLng(38.686721397222016, -104.6943169562476),
+            new google.maps.LatLng(38.683957382880884, -104.69422916464784),
+        ]
+        var mesaridge = [
+            new google.maps.LatLng(38.7245318319877, -104.73459179825514),
+            new google.maps.LatLng(38.726219341385445, -104.72859191510027),
+            new google.maps.LatLng(38.723075318584996, -104.72239890212491),
+            new google.maps.LatLng(38.72269360671874, -104.7146608548825),
+            new google.maps.LatLng(38.720192339026426, -104.70974249531433),
+            new google.maps.LatLng(38.719961293806975, -104.70376836208605),
+            new google.maps.LatLng(38.71636280289833, -104.69081164030167),
+            new google.maps.LatLng(38.7169204473745, -104.68824318420617),
+            new google.maps.LatLng(38.718680484242356, -104.68536204611895),
+            new google.maps.LatLng(38.72112452800836, -104.68220173990834),
+            new google.maps.LatLng(38.72084325915303, -104.67929192504278),
+            new google.maps.LatLng(38.71917571392764, -104.67179850832152),
+            new google.maps.LatLng(38.719045121388845, -104.66201329038185),
+            new google.maps.LatLng(38.717829594823066, -104.65836958451743)
+        ]
+        var ohio = [
+            new google.maps.LatLng(38.683185635699715, -104.69805133328276),
+            new google.maps.LatLng(38.68328761021761, -104.69429857886159),
+            new google.maps.LatLng(38.68399215749531, -104.69292098559983),
+            new google.maps.LatLng(38.68412307526887, -104.67827902470624)
+        ]
+        var oakranch = [
+            new google.maps.LatLng(38.718019384077586, -104.72982080658966),
+            new google.maps.LatLng(38.71156813501567, -104.7264207155118),
+            new google.maps.LatLng(38.707465127642415, -104.7244884232413),
+            new google.maps.LatLng(38.68993408056432, -104.72056809955048),
+            new google.maps.LatLng(38.68546725433153, -104.71923035853767)
+        ]
+        var magrath = [
+            new google.maps.LatLng(38.765524258033, -104.79696168920012),
+            new google.maps.LatLng(38.765030695793484, -104.79617848418592),
+            new google.maps.LatLng(38.76457895783146, -104.79551329634),
+            new google.maps.LatLng(38.75945069527398, -104.7914899828472),
+            new google.maps.LatLng(38.75894872477047, -104.79113593122388),
+            new google.maps.LatLng(38.750372850665585, -104.78612556477363),
+            new google.maps.LatLng(38.745010052128954, -104.78177660309997),
+            new google.maps.LatLng(38.740294857551326, -104.77701813967569),
+            new google.maps.LatLng(38.735881480092345, -104.77129189967368),
+            new google.maps.LatLng(38.73111480311824, -104.76326571719385),
+            new google.maps.LatLng(38.728170708583, -104.7563627748221),
+            new google.maps.LatLng(38.72588390601249, -104.74900046704309),
+            new google.maps.LatLng(38.725405263653464, -104.73918405667106),
+            new google.maps.LatLng(38.724767068853744, -104.73604825891334)
+        ]
+        var barkeley = [
+            new google.maps.LatLng(38.76029362103815, -104.79242083674863),
+            new google.maps.LatLng(38.75927996913624, -104.79162913122724),
+            new google.maps.LatLng(38.75836338666698, -104.79106204019584),
+            new google.maps.LatLng(38.75620856750424, -104.78986599367114),
+            new google.maps.LatLng(38.75545677758094, -104.78954636054992),
+            new google.maps.LatLng(38.75488187408377, -104.78960822502445),
+            new google.maps.LatLng(38.75377627739454, -104.79040730782724),
+            new google.maps.LatLng(38.75340640121582, -104.79056196902502),
+            new google.maps.LatLng(38.75319733992186, -104.7905825905163),
+            new google.maps.LatLng(38.75284756293835, -104.7905568136519),
+            new google.maps.LatLng(38.75256613193722, -104.79039699709273),
+            new google.maps.LatLng(38.752413354640886, -104.79030935575295),
+            new google.maps.LatLng(38.74603304411706, -104.7859888058936),
+            new google.maps.LatLng(38.74117901206312, -104.78163942535765),
+            new google.maps.LatLng(38.740108985214164, -104.78132628506457),
+            new google.maps.LatLng(38.739562334812035, -104.7809684104),
+            new google.maps.LatLng(38.73226938634645, -104.77145490980546),
+            new google.maps.LatLng(38.72982925255873, -104.76716719573906),
+            new google.maps.LatLng(38.72737128370311, -104.76171844849694),
+            new google.maps.LatLng(38.72726171067346, -104.75981228119657),
+            new google.maps.LatLng(38.72573549739278, -104.75565884285949)
+        ]
+        var westmedaow = [
+            new google.maps.LatLng(38.7778728444398, -104.81135067115432),
+            new google.maps.LatLng(38.77699589228424, -104.8108802598831),
+            new google.maps.LatLng(38.7728023174597, -104.81096207053899),
+            new google.maps.LatLng(38.76873606836943, -104.80985762665034),
+            new google.maps.LatLng(38.76828956415692, -104.80942812070705),
+            new google.maps.LatLng(38.768050364322164, -104.8086304668124),
+            new google.maps.LatLng(38.76797063086566, -104.80480581865078),
+            new google.maps.LatLng(38.76749510132436, -104.80393992724089),
+            new google.maps.LatLng(38.767095138209676, -104.80372618826223),
+            new google.maps.LatLng(38.76541749098808, -104.80378318530245)
+        ]
+        var chiles = [
+            new google.maps.LatLng(38.761912885070316, -104.80380441967203),
+            new google.maps.LatLng(38.75835416356594, -104.8036807702739),
+            new google.maps.LatLng(38.755680622980485, -104.80337726715702),
+            new google.maps.LatLng(38.746172941146035, -104.79853516479017),
+            new google.maps.LatLng(38.73824636352006, -104.79238269484888),
+            new google.maps.LatLng(38.73643888176537, -104.79061425382409)
+        ]
+        var broadmoor = [
+            new google.maps.LatLng(38.76586767096788, -104.81400220941438),
+            new google.maps.LatLng(38.76554275687197, -104.81778236348954),
+            new google.maps.LatLng(38.76431271153418, -104.8187050782638),
+            new google.maps.LatLng(38.76287376366089, -104.81855625330022),
+            new google.maps.LatLng(38.76069207766584, -104.8193599081036),
+            new google.maps.LatLng(38.75862637732472, -104.82001473794341),
+            new google.maps.LatLng(38.75825500912473, -104.82028262287785),
+            new google.maps.LatLng(38.75781400687737, -104.8209969827031),
+            new google.maps.LatLng(38.75728015840558, -104.82221734740453),
+            new google.maps.LatLng(38.75709447104462, -104.82418183692393),
+            new google.maps.LatLng(38.75688557218604, -104.82564032156709),
+            new google.maps.LatLng(38.757326580170364, -104.82724763117386),
+            new google.maps.LatLng(38.75656061719072, -104.82867635082434),
+            new google.maps.LatLng(38.7568159390973, -104.83129567018351),
+            new google.maps.LatLng(38.756049970637434, -104.8321290899796),
+            new google.maps.LatLng(38.75526078241436, -104.83201003000873),
+            new google.maps.LatLng(38.75245213001167, -104.83355780963007),
+            new google.maps.LatLng(38.74990631060538, -104.83267198623305),
+            new google.maps.LatLng(38.74789438359375, -104.83384804224688),
+            new google.maps.LatLng(38.74540898371189, -104.83289960997767),
+            new google.maps.LatLng(38.74523145183825, -104.83195117770843),
+            new google.maps.LatLng(38.74646993776957, -104.83000945144403),
+            new google.maps.LatLng(38.747121265390824, -104.82810285315946),
+            new google.maps.LatLng(38.74776029803696, -104.82733075963927)
+        ]
+        var norad = [
+            new google.maps.LatLng(38.74902193924205, -104.81251524568663),
+            new google.maps.LatLng(38.74672087617024, -104.81261180520342),
+            new google.maps.LatLng(38.746210448493436, -104.81343792551368),
+            new google.maps.LatLng(38.746306222677816, -104.8146331461994),
+            new google.maps.LatLng(38.74694680200968, -104.8165063723804),
+            new google.maps.LatLng(38.74703047806509, -104.816645847238),
+            new google.maps.LatLng(38.74953234681884, -104.81722520433868),
+            new google.maps.LatLng(38.75053641664746, -104.81927441186157),
+            new google.maps.LatLng(38.750469479098584, -104.81938170025148),
+            new google.maps.LatLng(38.75037372346933, -104.81968696138355),
+            new google.maps.LatLng(38.74954909410203, -104.81995696918344),
+            new google.maps.LatLng(38.748988469759325, -104.81977866747852),
+            new google.maps.LatLng(38.748143360270355, -104.82014344787527),
+            new google.maps.LatLng(38.74805131803891, -104.82491777977707),
+            new google.maps.LatLng(38.74713088918404, -104.8264627322437),
+            new google.maps.LatLng(38.74567491387537, -104.82691334332203),
+            new google.maps.LatLng(38.74476282220581, -104.82723520848383),
+            new google.maps.LatLng(38.74400134230326, -104.82836173617966),
+            new google.maps.LatLng(38.741423965413496, -104.83310388171199),
+            new google.maps.LatLng(38.738252325223336, -104.83335064514893),
+            new google.maps.LatLng(38.737800417809886, -104.83385490040324),
+            new google.maps.LatLng(38.73772509962965, -104.83463810537272),
+            new google.maps.LatLng(38.73800963456048, -104.83527110664942),
+            new google.maps.LatLng(38.741750326688674, -104.83896182633062),
+            new google.maps.LatLng(38.742980444407465, -104.84051750769022)
+        ]
+        var nelson = [
+            new google.maps.LatLng(38.7551562379553, -104.77892877091081),
+            new google.maps.LatLng(38.753315315587166, -104.77909738851073),
+            new google.maps.LatLng(38.7479895228253, -104.78236856994918),
+            new google.maps.LatLng(38.74459658827299, -104.78869173023588),
+            new google.maps.LatLng(38.743912721493004, -104.78978774474366),
+            new google.maps.LatLng(38.743912721493004, -104.79068141802324),
+            new google.maps.LatLng(38.73965155787229, -104.7997867690443),
+            new google.maps.LatLng(38.73911231842699, -104.80233289506842)
+        ]
+
+        var roads = [academy, i25, lasvegas, sh115, venetucci, lake, nevada, bandley, santa, fountain, mesaridge, ohio, oakranch, magrath, barkeley, westmedaow, chiles, broadmoor, norad, nelson]
+        var color = {{ color | safe }};
+        setline(roads);
+
+        // Add the polyline to the map
+        function setline(roads) {
+            var count = 0;
+            var line = [];
+            for (var r of roads) {
+                line[count] = new google.maps.Polyline({
+                    path: r,
+                    geodesic: true,
+                    strokeColor: color[count],  // Set the line color to red
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                line[count].setMap(map);
+
+                {#var marker = new google.maps.Marker({#}
+                {#     position: r[2],#}
+                {#     map: map,#}
+                {#     title: 'Hello World!'#}
+                {# });#}
+                {##}
+                {# #}
+                {# marker.setMap(map);#}
+                {##}
+                {# var infowindow = new google.maps.InfoWindow()#}
+                {##}
+                {# var content = ""#}
+                {# google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {#}
+                {#     return function () {#}
+                {#         infowindow.setContent(content);#}
+                {#         infowindow.open(map, marker);#}
+                {#     };#}
+                {# })(marker, content, infowindow));#}
+
+                count++;
+            }
+        }
+    }
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCraceLgmTlpih8yfcfLPKxJSrwHExWWl0&callback=initMap"
+        async defer></script>
+</body>
+</html>
+
